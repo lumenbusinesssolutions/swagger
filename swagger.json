@@ -1,0 +1,2690 @@
+{
+  "swagger" : "2.0",
+  "info" : {
+    "description" : "REST API resources for create, retrieve, and update of Salesforce data. [![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/58ab66c93ceb3e845b70)",
+    "version" : "1.0.2",
+    "title" : "Four Seasons SF REST API"
+  },
+  "host" : "four-seasons--QA.cs99.my.salesforce.com",
+  "basePath" : "/services/apexrest/",
+  "tags" : [ {
+    "name" : "Digital Platform",
+    "description" : "Access to Property Owned"
+  }, {
+    "name" : "KEY guests",
+    "description" : "Access to KEY concierge guests"
+  }, {
+    "name" : "KEY requests",
+    "description" : "Access to KEY concierge requests"
+  }, {
+    "name" : "RESI requests",
+    "description" : "Access to Golden HOME requests"
+  }, {
+    "name" : "RESI units* Description",
+    "description" : "Access to Golden HOME units"
+  } ],
+  "schemes" : [ "https" ],
+  "paths" : {
+    "/v1/key/guests/{goldenId}/requests" : {
+      "get" : {
+        "tags" : [ "KEY guests" ],
+        "summary" : "Retrieve requests by Golden Id",
+        "description" : "Retrieves requests by Golden Id. Optional to also filter by property code, stay confirmathis API is used to create a common areaion number, request date, request status, and request type.",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "goldenId",
+          "in" : "path",
+          "description" : "Golden Id of guest to return",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "fields",
+          "in" : "query",
+          "description" : "Comma-separated list of one or more fields to return in the response",
+          "required" : true,
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          },
+          "collectionFormat" : "multi"
+        }, {
+          "name" : "property",
+          "in" : "query",
+          "description" : "Property code  (e.g. TFY, MAR)",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "confirmation",
+          "in" : "query",
+          "description" : "Stay confirmation number",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "onOrAfter",
+          "in" : "query",
+          "description" : "Request date in \"yyyy-MM-dd\" format",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "onOrBefore",
+          "in" : "query",
+          "description" : "Request date in \"yyyy-MM-dd\" format",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "requestStatus",
+          "in" : "query",
+          "description" : "Request status",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "requestSubType",
+          "in" : "query",
+          "description" : "Request sub-type in Salesforce record type developername format",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/Request_KEY"
+              }
+            }
+          },
+          "400" : {
+            "description" : "Invalid input, object invalid",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/ExceptionResponse"
+              }
+            }
+          },
+          "404" : {
+            "description" : "Guest not found",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/ExceptionResponse"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/key/requests" : {
+      "post" : {
+        "tags" : [ "KEY requests" ],
+        "summary" : "Create a new KEY concierge request",
+        "description" : "If the caller is unable to populate any required lookup with proper Salesforce record Id, populate **mappings** with lookup-name/alternate-Id pair(s) for server-side resolution. \r\n\u0000\r\n\n### Supported Lookup Fields\n* AccountId (Golden Id) \r\n\u0000\r\n * Currency__c (Currency Code) \r\n\u0000\r\n * RecordTypeId (Sub Request DeveloperName) \r\n\u0000\r\n * Stay_Information__c (Confirmation Number) \r\n\u0000\r\n * Vendor__c (Vendor External Id) ",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "Body",
+          "description" : "Contains the Case object to be created and the optional map of lookup-name/alternate-Id pairs",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/WrapperContainer_KEY"
+          }
+        } ],
+        "responses" : {
+          "201" : {
+            "description" : "Request created",
+            "schema" : {
+              "$ref" : "#/definitions/CreateResponse"
+            }
+          },
+          "400" : {
+            "description" : "Invalid input, object invalid",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/ExceptionResponse"
+              }
+            }
+          }
+        }
+      },
+      "patch" : {
+        "tags" : [ "KEY requests" ],
+        "summary" : "Update a KEY concierge request",
+        "description" : "If the caller is unable to populate any required lookup with proper Salesforce record Id, populate **mappings** with lookup-name/alternate-Id pair(s) for server-side resolution. \r\n\u0000\r\n If Id field of the request object isn't populated, the API will attempt to resolve it using CaseNumber.\n### Supported Lookup Fields\n* AccountId (Golden Id) \r\n\u0000\r\n * Currency__c (Currency Code) \r\n\u0000\r\n * Id (Case Number) \r\n\u0000\r\n * RecordTypeId (Sub Request DeveloperName) \r\n\u0000\r\n * Stay_Information__c (Confirmation Number) \r\n\u0000\r\n * Vendor__c (Vendor Id) ",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "RequestWrapper",
+          "description" : "Contains the Case object to be updated and the optional map of lookup-name/alternate-Id pairs",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/WrapperContainer_KEY"
+          }
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "Successful operation"
+          },
+          "400" : {
+            "description" : "Invalid input, object invalid",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/ExceptionResponse"
+              }
+            }
+          },
+          "404" : {
+            "description" : "Request not found"
+          }
+        }
+      }
+    },
+    "/v1/resi/units/{recordId}" : {
+      "get" : {
+        "tags" : [ "RESI units" ],
+        "summary" : "Get unit information by record Id.",
+        "description" : "Fetch unit information based on unit record id.",
+        "parameters" : [ {
+          "name" : "recordId",
+          "in" : "path",
+          "description" : "Unit record Id",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "fields",
+          "in" : "query",
+          "description" : "Comma-separated list of one or more fields to return in response",
+          "required" : true,
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          },
+          "collectionFormat" : "multi"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/Unit"
+            }
+          },
+          "400" : {
+            "description" : "Invalid input, object invalid",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/ExceptionResponse"
+              }
+            }
+          },
+          "401" : {
+            "description" : "Session expired or invalid",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/ExceptionResponse"
+              }
+            }
+          },
+          "404" : {
+            "description" : "Record not found",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/ExceptionResponse"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/resi/units/{recordId}/requests" : {
+      "get" : {
+        "tags" : [ "RESI units" ],
+        "summary" : "Get requests (Home Instructions, Home Requests) based on unit record Id.",
+        "description" : "Fetch requests of type Home Instructions/Rrequests by passing unit id.",
+        "parameters" : [ {
+          "name" : "recordId",
+          "in" : "path",
+          "description" : "Unit record Id",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "fields",
+          "in" : "query",
+          "description" : "Comma-separated list of one or more fields to return in response",
+          "required" : false,
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          },
+          "collectionFormat" : "multi"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/Request_RESI"
+            }
+          },
+          "400" : {
+            "description" : "Invalid input, object invalid",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/ExceptionResponse"
+              }
+            }
+          },
+          "401" : {
+            "description" : "Session expired or invalid",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/ExceptionResponse"
+              }
+            }
+          },
+          "404" : {
+            "description" : "Record not found",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/ExceptionResponse"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/resi/unitsearch" : {
+      "post" : {
+        "tags" : [ "RESI units" ],
+        "summary" : "This endpoint is used to retrieve a resident's property owned Id, unit Id and account Id",
+        "description" : "Retrieves property owned records by passing the property code, the resident's first and last name plus their unit number. All these data points are required and must be exact matches for record(s) to be found.",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "Body",
+          "description" : "Contains the Unit Search object",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/WrapperContainer_UnitSearch"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "The search was successful and found at least 1 matching record.",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/PropertyOwned"
+              }
+            }
+          },
+          "400" : {
+            "description" : "Invalid input, object invalid, missing required field",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/ExceptionResponse"
+              }
+            }
+          },
+          "401" : {
+            "description" : "Session expired or invalid",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/ExceptionResponse"
+              }
+            }
+          },
+          "404" : {
+            "description" : "Record not found",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/ExceptionResponse"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/resi/properties/{propertyCode}/residents" : {
+      "get" : {
+        "tags" : [ "RESI units" ],
+        "summary" : "This endpoint is used to retrieve all residents for the property code with their unit number, first name and last name being returned",
+        "description" : "Retrieves property owned records by passing the property code, property code must be passed .",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "propertyCode",
+          "in" : "path",
+          "description" : "Property Code String",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Successful operation.",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/propertyResidents"
+              }
+            }
+          },
+          "400" : {
+            "description" : "Invalid input, object invalid, missing required field",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/ExceptionResponse"
+              }
+            }
+          },
+          "401" : {
+            "description" : "Session expired or invalid",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/ExceptionResponse"
+              }
+            }
+          },
+          "404" : {
+            "description" : "No Records found",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/ExceptionResponse"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/resi/{recordType}/picklist-values" : {
+      "get" : {
+        "tags" : [ "RESI units" ],
+        "summary" : "This endpoint is used to retrieve the supported picklist values based on the SFDC RecordType.",
+        "description" : "Use this resource to get the values for all the picklist fields of the HOME_Requests record type. This resource is especially useful for getting category and status picklist values. These picklist values do not change often as such it is recommended that this result be cached to reduce the number of API request per day. Supported Record Types: 1. HOME_Requests 2. Home_Instructions",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "recordType",
+          "in" : "path",
+          "description" : "The SFDC Record Type API name",
+          "required" : true,
+          "type" : "string",
+          "enum" : [ "HOME_Requests", "Home_Instructions" ]
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/PicklistValuesCollection"
+            }
+          },
+          "400" : {
+            "description" : "Invalid input, object invalid",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/ExceptionResponse"
+              }
+            }
+          },
+          "401" : {
+            "description" : "Session expired or invalid",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/ExceptionResponse"
+              }
+            }
+          },
+          "404" : {
+            "description" : "Record not found",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/ExceptionResponse"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/resi/properties-owned/{propertyOwnedId}/" : {
+      "get" : {
+        "tags" : [ "Digital Platform" ],
+        "summary" : "Retrieve resident information by property Owned Id",
+        "description" : "Retrieves information by property owned Id\n### Resident Detail\n* Returns the resident's personal information like preferred email, phone, type of resident and a link to the resident's profile photo \r\n\u0000\r\n * Response Node Key: 'Resident'\n### Common area bookings\n* Returns bookings that are Approved or Requested \r\n\u0000\r\n * Bookings are returned that happened in the last 45 days \r\n\u0000\r\n * Bookings that are happening in the next year(365 days) are returned \r\n\u0000\r\n * Response Node Key: 'Common_Area_Bookings'\n### Requests\n* Returns Home requests and Home instructions that are visible to the resident \r\n\u0000\r\n * Requests are returned that happened in the last 45 days \r\n\u0000\r\n * Requests that are happening in the next year(365 days) are returned \r\n\u0000\r\n * Response Node Key: 'Requests'\n### Notification Preference\n* Returns the resident's notification preference as a boolean flag indicating what types of request the resident wants to be notified about \r\n\u0000\r\n * Returns the type of notification the resident wants to receives. Currently only Email is supported. \r\n\u0000\r\n * Response Node Key: 'Notification_Preference' \r\n\u0000\r\n\n### Pets\n* Returns a list of the pets that are assigned to the resident \r\n\u0000\r\n * Each pet record has the pets details like name, category, notes and insuranc dates. Response Node Key: 'Pet__c' \r\n\u0000\r\n * Each pet record has a single profile photo. Response Node Key: 'profilePhoto' \r\n\u0000\r\n * Each pet record has a little for supporting attachments (ie. insurance documents). Respone Node Key: 'attachments' \r\n\u0000\r\n * Response Node Key: 'Pets' \r\n\u0000\r\n\n### Vehicles Owned\n* Returns a list of vehicles owned assigned to the resident \r\n\u0000\r\n * Each Vehicle record has details such as Make, Vehicle Type, Model. \r\n\u0000\r\n * Inside Vehicles_Owned there is a Node Key: 'profilePhoto' this will store the vehicles image. \r\n\u0000\r\n * There is also a Node Key: 'Vehicle_Drivers' that stores all the drivers assigned to the vehicle along with their photo \r\n\u0000\r\n * Response Node Key: 'Vehicles_Owned' \r\n\u0000\r\n * Ignore Resident_Connections__r node inside Vehicles_Owned Node \r\n\u0000\r\n * Vehicle_Drivers will store the Driver photo and Name if there is no photo it will be null \r\n\u0000\r\n\n",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "propertyOwnedId",
+          "in" : "path",
+          "description" : "Property Owned Id",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/propertyOwnedInfo"
+            }
+          },
+          "400" : {
+            "description" : "Invalid input, object invalid",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/ExceptionResponse"
+              }
+            }
+          },
+          "401" : {
+            "description" : "Session expired or invalid",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/ExceptionResponse"
+              }
+            }
+          },
+          "404" : {
+            "description" : "Record not found",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/PropertyOwnedNoRecordFound"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/resi/properties-owned/{propertyOwnedId}/requests" : {
+      "get" : {
+        "tags" : [ "Digital Platform" ],
+        "summary" : "(Deprecating) Use /v1/resi/properties-owned/{propertyOwnedId}",
+        "description" : "\n### Deprecating Use: /v1/resi/properties-owned/{propertyOwnedId}/\n### Ignore Resident_Connections__r node inside Vehicles_Owned Node\nVehicle_Drivers will store the Driver photo and Name if there is no photo it will be null ",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "propertyOwnedId",
+          "in" : "path",
+          "description" : "Property Owned Id",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/propertyOwnedInfo"
+            }
+          },
+          "400" : {
+            "description" : "Invalid input, object invalid",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/ExceptionResponse"
+              }
+            }
+          },
+          "401" : {
+            "description" : "Session expired or invalid",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/ExceptionResponse"
+              }
+            }
+          },
+          "404" : {
+            "description" : "Record not found",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/PropertyOwnedNoRecordFound"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/resi/properties-owned/{propertyOwnedId}/common-areas" : {
+      "get" : {
+        "tags" : [ "Digital Platform" ],
+        "summary" : "Retrieve common areas that are viewable to residents by property owned Id",
+        "description" : "This API will return all the common areas that are visible to residents by property Owned Id\n\nThe common areas will be filtered by the property and property owned location which are retrieved from the property owned ",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "propertyOwnedId",
+          "in" : "path",
+          "description" : "Property Owned Id",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Successfull operation",
+            "schema" : {
+              "$ref" : "#/definitions/commonAreasInfo"
+            }
+          },
+          "400" : {
+            "description" : "Invalid input, object invalid",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/ExceptionResponse"
+              }
+            }
+          },
+          "401" : {
+            "description" : "Session expired or invalid",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/ExceptionResponse"
+              }
+            }
+          },
+          "404" : {
+            "description" : "Record not found",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/PropertyOwnedNoRecordFound"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/resi/properties/{propertyId}/common-areas" : {
+      "get" : {
+        "tags" : [ "Digital Platform" ],
+        "summary" : "Retrieve common areas that are viewable to residents by property id",
+        "description" : "This API will return all the common areas that are visible to residents by property Id\nA location Id can also be passed in the query to filter by property and location. Location Id is optional\nIf only a property Id is passed, the locations of the common areas are ignored\n\n",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "propertyId",
+          "in" : "path",
+          "description" : "Property Id",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "locationId",
+          "in" : "query",
+          "description" : "location Id",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Successfull operation",
+            "schema" : {
+              "$ref" : "#/definitions/commonAreasInfo"
+            }
+          },
+          "400" : {
+            "description" : "Invalid input, object invalid",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/ExceptionResponse"
+              }
+            }
+          },
+          "401" : {
+            "description" : "Session expired or invalid",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/ExceptionResponse"
+              }
+            }
+          },
+          "404" : {
+            "description" : "Record not found",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/PropertyRecordNotFound"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/resi/properties-owned/{propertyOwnedId}/home-owner-association" : {
+      "get" : {
+        "tags" : [ "Digital Platform" ],
+        "summary" : "Get requests (Home Instructions, Home Requests) based on unit record Id.",
+        "description" : "This API will return the Home owner association details matched to the property owned id passed through.\n### Home_Owner_Association_Members\n* Returns list of Home owner association members that are active \r\n\u0000\r\n\n\n",
+        "parameters" : [ {
+          "name" : "propertyOwnedId",
+          "in" : "path",
+          "description" : "Property Owned Id",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/HOME_OWNER_ASSOCIATION_GET"
+            }
+          },
+          "400" : {
+            "description" : "Invalid input, object invalid",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/ExceptionResponse"
+              }
+            }
+          },
+          "401" : {
+            "description" : "Session expired or invalid",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/ExceptionResponse"
+              }
+            }
+          },
+          "404" : {
+            "description" : "Record not found",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/PropertyOwnedNoRecordFound"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/resi/common-area/{commonAreaId}/bookings" : {
+      "get" : {
+        "tags" : [ "Digital Platform" ],
+        "summary" : "Retrieve Common area bookings for a specified date range",
+        "description" : "This API will return all the common area bookings for the specified dates.\nEach booking will return the start time, end time, property owned id and the date it is booked on.\n### Example\n* startDate 10/05/2019 \r\n\u0000\r\n * The Start date will begin on 10/05/2019 00:00:00 \r\n\u0000\r\n * endDate 10/05/2019 \r\n\u0000\r\n * The end date will be until 10/05/2019 23:59:59\n\n",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "commonAreaId",
+          "in" : "path",
+          "description" : "Common Area Id",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "startDate",
+          "in" : "query",
+          "description" : "Start date",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "endDate",
+          "in" : "query",
+          "description" : "End Date",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/commonAreaBookings"
+            }
+          },
+          "400" : {
+            "description" : "Invalid input, object invalid",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/ExceptionResponse"
+              }
+            }
+          },
+          "401" : {
+            "description" : "Session expired or invalid",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/ExceptionResponse"
+              }
+            }
+          },
+          "404" : {
+            "description" : "Record not found",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/commonAreaRecordNotFound"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/resi/file/{fileId}/" : {
+      "get" : {
+        "tags" : [ "Digital Platform" ],
+        "summary" : "Retrieves the file's content as Base64 Binary stream for the file id passed in.",
+        "description" : " The file's content is only available to the API after one of the other API endpoints like /v1/resi/properties-owned/{propertyOwnedId}/ has returned the file detail.\n\n(File Detail)  All files will be represented with the following 4 attributes:\n1. **url**: This is the endpoint for retrieving the file's content (You will used this value to call this API).\n2. **size**: the number of bytes\n3. **name**: the name of the file in Salesforce\n4. **extension**: the file's extension type\n\nThere is an expiration period which is currently set to 60 minutes; however, this is adjustable by Salesforce System admins as needed. If you try to access this endpoint to retrieve the file's content after the expiration period, you will receive an error. The expiration period is refreshed each time you retrieve the main record which the file is associated with. So, the expiration period is X minutes from the last time you retrieved the file's related record.\n",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "fileId",
+          "in" : "path",
+          "description" : "This is the id of the file to retrieve. This id will be included in the relative path detail ('url') from a previous endpoint call.\n## For example:\n* If you are working with a resident's profile photo, you will receive the path needed to make this call from the Resident.profilePhoto.url node of the /v1/resi/properties-owned/{propertyOwnedId}/ endpoint.\n* If you are working with an attachment from a request, you will recieve the path needed to make this call from the Requests[x].attachments[x].url node of the /v1/resi/properties-owned/{propertyOwnedId}/ endpoint.\n",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Successful operation - results in binary dump of the file's content"
+          },
+          "400" : {
+            "description" : "Invalid input, object invalid",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/ExceptionResponse"
+              }
+            }
+          },
+          "401" : {
+            "description" : "Session expired or invalid",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/ExceptionResponse"
+              }
+            }
+          },
+          "404" : {
+            "description" : "Record not found or Expired",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/fileNotFound"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/resi/properties-owned/{propertyOwnedId}/documents" : {
+      "get" : {
+        "tags" : [ "Digital Platform" ],
+        "summary" : "Retrieve documents that are viewable to residents by property owned Id",
+        "description" : "This API will return all the unit documents, resident documents and the property wide documents that are visible to residents by property Owned Id\n\nEach document record will have the category, type of document and the following 4 attributes about the file:\n1. **url**: This is the endpoint for retrieving the file's content (You will used this value to call the file retrieve API).\n2. **size**: the number of bytes\n3. **name**: the name of the file in Salesforce\n4. **extension**: the file's extension type\n\n\n### Unit Documents\n* Returns documents which are assigned to the resident's (based on the property owned id passed in) unit and has visible to resident set to true \r\n\u0000\r\n * Response Node Key: 'Unit_Documents'\n### Resident Documents\n* Returns documents which are assigned specifically to the resident (based on the property owned id passed in) and has visible to resident set to true \r\n\u0000\r\n * Response Node Key: 'Resident_Documents'\n",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "propertyOwnedId",
+          "in" : "path",
+          "description" : "Property Owned Id",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Successfull operation",
+            "schema" : {
+              "$ref" : "#/definitions/documentLibraryInfo"
+            }
+          },
+          "400" : {
+            "description" : "Invalid input, object invalid",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/ExceptionResponse"
+              }
+            }
+          },
+          "401" : {
+            "description" : "Session expired or invalid",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/ExceptionResponse"
+              }
+            }
+          },
+          "404" : {
+            "description" : "Record not found",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/PropertyOwnedNoRecordFound"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/resi/common-area" : {
+      "post" : {
+        "tags" : [ "Digital Platform" ],
+        "summary" : "Create a common area",
+        "description" : "This API is used to create a common area\n\n### Required fields\n* Description \r\n\u0000\r\n * Property_Owned__c \r\n\u0000\r\n * Common_Area__c \r\n\u0000\r\n * Status \r\n\u0000\r\n * time__c \r\n\u0000\r\n * End_Time__c \r\n\u0000\r\n * Request_date__c \r\n\u0000\r\n * End_Date__c \r\n\u0000\r\n\n",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "Body",
+          "description" : "Contains Common Area Information for the case to be created",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/RequestWrapper_CommonArea"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Case Created",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/CreateResponse"
+              }
+            }
+          },
+          "400" : {
+            "description" : "Invalid input, object invalid, missing required field",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/ExceptionResponse"
+              }
+            }
+          },
+          "401" : {
+            "description" : "Session expired or invalid",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/ExceptionResponse"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/resi/profilephoto/" : {
+      "post" : {
+        "tags" : [ "Digital Platform" ],
+        "summary" : "Upload 'profile' photo",
+        "description" : "This endpoint is used to add or replace an existing 'profile' photo for the Salesforce record ID that is passed in. If there is an existing profile photo the previous version is deleted from Salesforce.\nCurrently the following objects support 'profile' photo uploads:\n1. Account (Resident)\n2. Pet__c\n3. Vehicle__c\n\nCurrently these are the supported file extenstions: png and jpg\n\nThe maximum file size is 5 MB, recommended size is less than 3 MB.",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "Body",
+          "description" : "Contains the fileUpload object (converted binary into base64)",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/WrapperContainer_FileUplod"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "The file was successfully uploaded.",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/fileUploadSuccess"
+              }
+            }
+          },
+          "400" : {
+            "description" : "Invalid input, object invalid, missing required field",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/ExceptionResponse"
+              }
+            }
+          },
+          "401" : {
+            "description" : "Session expired or invalid",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/ExceptionResponse"
+              }
+            }
+          },
+          "404" : {
+            "description" : "Record not OR Profile Photo upload not supported",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/ExceptionResponse"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/resi/attachment/" : {
+      "post" : {
+        "tags" : [ "Digital Platform" ],
+        "summary" : "Upload file attachment",
+        "description" : "This endpoint is used to add a file to the Salesforce record ID that is passed in.\nCurrently the following objects support attachment uploads:\n1. Pet__c\n2. Case (HOME Requests / HOME Instructions)\n\nThe maximum file size is 5 MB, recommended size is less than 3 MB.",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "Body",
+          "description" : "Contains the fileUpload object (converted binary into base64)",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/WrapperContainer_FileUplod"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "The file was successfully uploaded.",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/fileUploadSuccess"
+              }
+            }
+          },
+          "400" : {
+            "description" : "Invalid input, object invalid, missing required field",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/ExceptionResponse"
+              }
+            }
+          },
+          "401" : {
+            "description" : "Session expired or invalid",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/ExceptionResponse"
+              }
+            }
+          },
+          "404" : {
+            "description" : "Record not OR attachment upload not supported",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/ExceptionResponse"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/resi/notification-preference/" : {
+      "post" : {
+        "tags" : [ "Digital Platform" ],
+        "summary" : "Creates a notification preference for the resident",
+        "description" : "This endpoint is used to create a new notification preference for a resident. Currently the only notification type supported in Email. There are several flags to enroll the resident into notification for different category of requests. If the flag is set to 'True' the resident will be emailed when when any request of that category type enters into the status for email send.\nCurrently the supported types are:\n1. Common_Area_Bookings__c (Common Area Bookings)\n2. Grocery_items__c (Grocery)\n3. Laundry_Dry_Cleaning__c (Laundry and Dry Cleaning)\n4. Pick_up__c (Pick up)\n5. Vehicle_Services__c (Vehicle Services)\n6. Unit_Access__c (Unit Access)\n7. Florists_Plants__c (Florists and Plants)\n8. Keys__c (Keys)\n9. Packages_and_Deliveries__c (Packages and Deliveries)\n10. Resident_Pick_ups__c (Resident Pick Ups)\n11. Resident_Purchase_and_Errands__c (Resident Purchase and Errands)\n\nNote: A resident can only have 1 notification preference per unit. If changes are needed, use to PATCH endpoint (/v1/resi/notification-preference/) to update the existing record. If you try to add a new notification and one already exists you will be presented with the following error 'A notification already exists for this resident's property owned record'\n\nNote: A resident must have a preferred email address set on their property owned record as a prerequisite for a notification preference addition. If the email is not present on the property owned record wou will be presented with the following error 'A email address is required on the property owned record for this resident to subscribe to Email notifications.';\n\nRequired Fields: Property_Owned__c and Notify_By__c. Set Notify_By__c to Email as this is currently the only supported type.\n",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "Body",
+          "description" : "Contains the notification preference details",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/WrapperContainer_Notification"
+          }
+        } ],
+        "responses" : {
+          "201" : {
+            "description" : "This will indicate that the new notification was successfully created.",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/notificationSuccess"
+              }
+            }
+          },
+          "400" : {
+            "description" : "Invalid input, object invalid, missing required field, or a notification already exists for the property owned record",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/ExceptionResponse"
+              }
+            }
+          },
+          "401" : {
+            "description" : "Session expired or invalid",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/ExceptionResponse"
+              }
+            }
+          },
+          "404" : {
+            "description" : "Property owned record not found",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/ExceptionResponse"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/resi/notification-preference" : {
+      "patch" : {
+        "tags" : [ "Digital Platform" ],
+        "summary" : "Update an existing notification preference for the resident",
+        "description" : "This endpoint is used to update an existig notification preference for a resident. Currently the only notification type supported in Email. There are several flags to enroll the resident into notification for different category of requests. If the flag is set to 'True' the resident will be emailed when when any request of that category type enters into the status for email send.\nCurrently the supported types are:\n1. Common_Area_Bookings__c (Common Area Bookings)\n2. Grocery_items__c (Grocery)\n3. Laundry_Dry_Cleaning__c (Laundry and Dry Cleaning)\n4. Pick_up__c (Pick up)\n5. Vehicle_Services__c (Vehicle Services)\n6. Unit_Access__c (Unit Access)\n7. Florists_Plants__c (Florists and Plants)\n8. Keys__c (Keys)\n9. Packages_and_Deliveries__c (Packages and Deliveries)\n10. Resident_Pick_ups__c (Resident Pick Ups)\n11. Resident_Purchase_and_Errands__c (Resident Purchase and Errands)\n\nNote: A resident must have a preferred email address set on their property owned record as a prerequisite for a notification preference addition. If the email is not present on the property owned record wou will be presented with the following error 'A email address is required on the property owned record for this resident to subscribe to Email notifications.';\n\nRequired Fields: Id\n",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "Body",
+          "description" : "Contains the notification preference details",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/WrapperContainer_Notification_Update"
+          }
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "Update was successful."
+          },
+          "400" : {
+            "description" : "Invalid input, object invalid, missing required field, or a notification already exists for the property owned record",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/ExceptionResponse"
+              }
+            }
+          },
+          "401" : {
+            "description" : "Session expired or invalid",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/ExceptionResponse"
+              }
+            }
+          },
+          "404" : {
+            "description" : "Property owned record not found",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/ExceptionResponse"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/resi/file/{fileId}" : {
+      "delete" : {
+        "tags" : [ "Digital Platform" ],
+        "summary" : "Deletes the file based on the file id passed in.",
+        "description" : " The file's id is only available to the API after one of the other API endpoints like /v1/resi/properties-owned/{propertyOwnedId}/ has returned the file detail.\n\n(File Detail)  All files will be represented with the following 4 attributes:\n1. **url**: This is the endpoint for retrieving the file's content (You will used this value to call this API).\n2. **size**: the number of bytes\n3. **name**: the name of the file in Salesforce\n4. **extension**: the file's extension type\n\nThere is an expiration period which is currently set to 60 minutes; however, this is adjustable by Salesforce System admins as needed. If you try to access this endpoint to delete the file after the expiration period, you will receive an error. The expiration period is refreshed each time you retrieve the main record which the file is associated with. So, the expiration period is X minutes from the last time you retrieved the file's related record.\n",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "fileId",
+          "in" : "path",
+          "description" : "This is the id of the file to delete. This id will be included in the relative path detail ('url') from a previous endpoint call.\n## For example:\n* If you are working with a resident's profile photo, you will receive the path needed to make this call from the Resident.profilePhoto.url node of the /v1/resi/properties-owned/{propertyOwnedId}/ endpoint.\n* If you are working with an attachment from a request, you will recieve the path needed to make this call from the Requests[x].attachments[x].url node of the /v1/resi/properties-owned/{propertyOwnedId}/ endpoint.\n",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "Successful operation"
+          },
+          "400" : {
+            "description" : "Invalid input, object invalid",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/ExceptionResponse"
+              }
+            }
+          },
+          "401" : {
+            "description" : "Session expired or invalid",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/ExceptionResponse"
+              }
+            }
+          },
+          "404" : {
+            "description" : "Record not found or Expired or User does not have delete rights",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/fileNotFound"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/resi/requests" : {
+      "post" : {
+        "tags" : [ "RESI requests" ],
+        "summary" : "Create a new RESI requesst (Home Instruction, Home Requests)",
+        "description" : "Create a new request. Only Home Instruction/Request record types are supported.\n### RecordType name\n1. Home Instructions \r\n\u0000\r\n 2. Home Requests \r\n\u0000\r\n\n### Required fields for Home Instructions-\n* Description \r\n\u0000\r\n * Category__c \r\n\u0000\r\n * Property_lkp__c \r\n\u0000\r\n * Unit__c \r\n\u0000\r\n * Property_Owned__c \r\n\u0000\r\n * AccountId\n### Required fields for Home Request\n* Property_lkp__c \r\n\u0000\r\n * Unit__c \r\n\u0000\r\n * AccountId\nCase_Origin__c with Am passed is required for both record types\n### Digital Platform\nWhen Creating a Home request or Home instruction through the mobile app the following fields are required in the body as well\n* Created_By_Digital_Platform_User__c (User from the app that created the request) \r\n\u0000\r\n * Visible_to_Residents__c: true (When the resident should be able to view it on the app) \r\n\u0000\r\n\n### Supported Lookup Fields\n* AccountId (Golden Id) \r\n\u0000\r\n * Currency__c (Currency Code) \r\n\u0000\r\n * RecordTypeId (Sub Request DeveloperName) \r\n\u0000\r\n * Stay_Information__c (Reservation Number) \r\n\u0000\r\n * Vendor__c (Vendor External Id) ",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "Body",
+          "description" : "Contains the Case object to be created and the optional map of lookup-name/alternate-Id pairs",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/WrapperContainer_RESI"
+          }
+        } ],
+        "responses" : {
+          "201" : {
+            "description" : "Case created",
+            "schema" : {
+              "$ref" : "#/definitions/CreateResponse"
+            }
+          },
+          "400" : {
+            "description" : "Invalid input, object invalid",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/ExceptionResponse"
+              }
+            }
+          },
+          "401" : {
+            "description" : "Session expired or invalid",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/ExceptionResponse"
+              }
+            }
+          }
+        }
+      },
+      "patch" : {
+        "tags" : [ "RESI requests" ],
+        "summary" : "Update a request (Home Instruction, Home Requests)",
+        "description" : "Update case information. Only record types Home Instructions & Home Requests are supported. RecordType names\n* Home Instructions  \r\n\u0000\r\n * Home Requests \r\n\u0000\r\n\n### Digital Platform\nWhen Updating a Home request or Home instruction through the mobile app the following fields are required in the body as well\n* Last_Modified_By_Digital_Platform_User__c (App user who is modifying an existing Request) \r\n\u0000\r\n * Digital_Platform_User_Last_Modified_Date__c (Date Request is modified by the app user) \r\n\u0000\r\n\nRequired fields for Home Instructions- Description, Category__c, Property_lkp__c ,Unit__c, Property_Owned__c\nRequired fields for Home Request- Property_lkp__c, Unit__c\nIf the caller is unable to populate any required lookup with proper Salesforce record Id, populate **mappings** with lookup-name/alternate-Id pair(s) for server-side resolution. \r\n\u0000\r\n If Id field of the request object isn't populated, the API will attempt to resolve it using CaseNumber.\n### Supported Lookup Fields\n* AccountId (Golden Id) \r\n\u0000\r\n * Currency__c (Currency Code) \r\n\u0000\r\n * Id (Case Number) \r\n\u0000\r\n * RecordTypeId (Sub Request DeveloperName) \r\n\u0000\r\n * Stay_Information__c (Reservation Number) \r\n\u0000\r\n * Vendor__c (Vendor External Id) ",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "Body",
+          "description" : "Contains the Case object to be updated and the optional map of lookup-name/alternate-Id pairs",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/WrapperContainer_RESI_Update"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Successful operation"
+          },
+          "400" : {
+            "description" : "Invalid input, object invalid",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/ExceptionResponse"
+              }
+            }
+          },
+          "401" : {
+            "description" : "Session expired or invalid",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/ExceptionResponse"
+              }
+            }
+          },
+          "404" : {
+            "description" : "No such case found",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/ExceptionResponse"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions" : {
+    "WrapperContainer_KEY" : {
+      "type" : "object",
+      "required" : [ "requestWrapper" ],
+      "properties" : {
+        "requestWrapper" : {
+          "$ref" : "#/definitions/RequestWrapper_KEY"
+        }
+      }
+    },
+    "RequestWrapper_KEY" : {
+      "type" : "object",
+      "required" : [ "request" ],
+      "properties" : {
+        "request" : {
+          "$ref" : "#/definitions/Request_KEY"
+        },
+        "mappings" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string",
+            "example" : "alternateId"
+          }
+        }
+      }
+    },
+    "Request_KEY" : {
+      "type" : "object",
+      "required" : [ "AccountId", "Case_Origin__c", "Id", "Property__c", "RecordTypeId" ],
+      "properties" : {
+        "Id" : {
+          "type" : "string"
+        },
+        "AccountId" : {
+          "type" : "string"
+        },
+        "CaseNumber" : {
+          "type" : "string"
+        },
+        "Case_Origin__c" : {
+          "type" : "string"
+        },
+        "Property__c" : {
+          "type" : "string"
+        },
+        "RecordTypeId" : {
+          "type" : "string"
+        },
+        "more... (omitted)" : {
+          "type" : "string"
+        }
+      },
+      "example" : {
+        "Id" : "5000i000000cfd8AAA",
+        "Case_Origin__c" : "AM",
+        "Charge_To__c" : "Charge to Room",
+        "Property__c" : "TFY",
+        "Time__c" : "10:24:00.000Z",
+        "Request_Date__c" : "2019-01-15",
+        "Status" : "Open",
+        "CaseNumber" : "00071655"
+      }
+    },
+    "WrapperContainer_RESI" : {
+      "type" : "object",
+      "required" : [ "requestWrapper" ],
+      "properties" : {
+        "requestWrapper" : {
+          "$ref" : "#/definitions/RequestWrapper_RESI"
+        }
+      }
+    },
+    "RequestWrapper_RESI" : {
+      "type" : "object",
+      "required" : [ "request" ],
+      "properties" : {
+        "request" : {
+          "$ref" : "#/definitions/Request_RESI_POST"
+        },
+        "mappings" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string",
+            "example" : "alternateId"
+          }
+        }
+      }
+    },
+    "WrapperContainer_RESI_Update" : {
+      "type" : "object",
+      "required" : [ "requestWrapper" ],
+      "properties" : {
+        "requestWrapper" : {
+          "$ref" : "#/definitions/RequestWrapper_RESI_Update"
+        }
+      }
+    },
+    "RequestWrapper_RESI_Update" : {
+      "type" : "object",
+      "required" : [ "request" ],
+      "properties" : {
+        "request" : {
+          "$ref" : "#/definitions/Request_RESI_Update"
+        },
+        "mappings" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string",
+            "example" : "alternateId"
+          }
+        }
+      }
+    },
+    "RequestWrapper_CommonArea" : {
+      "type" : "object",
+      "required" : [ "requestWrapper" ],
+      "properties" : {
+        "requestWrapper" : {
+          "$ref" : "#/definitions/Request_CommonArea"
+        }
+      }
+    },
+    "WrapperContainer_Notification" : {
+      "type" : "object",
+      "required" : [ "requestWrapper" ],
+      "properties" : {
+        "requestWrapper" : {
+          "$ref" : "#/definitions/RequestWrapper_Notification"
+        }
+      }
+    },
+    "WrapperContainer_Notification_Update" : {
+      "type" : "object",
+      "required" : [ "requestWrapper" ],
+      "properties" : {
+        "requestWrapper" : {
+          "$ref" : "#/definitions/RequestWrapper_Notification_Update"
+        }
+      }
+    },
+    "RequestWrapper_Notification" : {
+      "type" : "object",
+      "required" : [ "notificationPreference" ],
+      "properties" : {
+        "notificationPreference" : {
+          "$ref" : "#/definitions/Notification_RESI"
+        }
+      }
+    },
+    "RequestWrapper_Notification_Update" : {
+      "type" : "object",
+      "required" : [ "notificationPreference" ],
+      "properties" : {
+        "notificationPreference" : {
+          "$ref" : "#/definitions/Notification_RESI_Update"
+        }
+      }
+    },
+    "Notification_RESI" : {
+      "type" : "object",
+      "required" : [ "Notify_By__c", "Property_Owned__c" ],
+      "properties" : {
+        "Property_Owned__c" : {
+          "type" : "string"
+        },
+        "Notify_By__c" : {
+          "type" : "string"
+        },
+        "Common_Area_Bookings__c" : {
+          "type" : "boolean"
+        },
+        "Grocery_items__c" : {
+          "type" : "boolean"
+        },
+        "Laundry_Dry_Cleaning__c" : {
+          "type" : "boolean"
+        },
+        "Pick_up__c" : {
+          "type" : "boolean"
+        },
+        "Vehicle_Services__c" : {
+          "type" : "boolean"
+        },
+        "Unit_Access__c" : {
+          "type" : "boolean"
+        },
+        "Florists_Plants__c" : {
+          "type" : "boolean"
+        },
+        "Keys__c" : {
+          "type" : "boolean"
+        },
+        "Packages_and_Deliveries__c" : {
+          "type" : "boolean"
+        },
+        "Resident_Pick_ups__c" : {
+          "type" : "boolean"
+        },
+        "Resident_Purchase_and_Errands__c" : {
+          "type" : "boolean"
+        }
+      }
+    },
+    "Notification_RESI_Update" : {
+      "type" : "object",
+      "properties" : {
+        "Id" : {
+          "type" : "string"
+        },
+        "Common_Area_Bookings__c" : {
+          "type" : "boolean"
+        },
+        "Grocery_items__c" : {
+          "type" : "boolean"
+        },
+        "Laundry_Dry_Cleaning__c" : {
+          "type" : "boolean"
+        },
+        "Pick_up__c" : {
+          "type" : "boolean"
+        },
+        "Vehicle_Services__c" : {
+          "type" : "boolean"
+        },
+        "Unit_Access__c" : {
+          "type" : "boolean"
+        },
+        "Florists_Plants__c" : {
+          "type" : "boolean"
+        },
+        "Keys__c" : {
+          "type" : "boolean"
+        },
+        "Packages_and_Deliveries__c" : {
+          "type" : "boolean"
+        },
+        "Resident_Pick_ups__c" : {
+          "type" : "boolean"
+        },
+        "Resident_Purchase_and_Errands__c" : {
+          "type" : "boolean"
+        }
+      }
+    },
+    "WrapperContainer_FileUplod" : {
+      "type" : "object",
+      "required" : [ "requestWrapper" ],
+      "properties" : {
+        "requestWrapper" : {
+          "$ref" : "#/definitions/RequestWrapper_FileUpload"
+        }
+      }
+    },
+    "RequestWrapper_FileUpload" : {
+      "type" : "object",
+      "required" : [ "fileUpload" ],
+      "properties" : {
+        "fileUpload" : {
+          "$ref" : "#/definitions/FileUpload_RESI"
+        }
+      }
+    },
+    "FileUpload_RESI" : {
+      "type" : "object",
+      "required" : [ "base64Content", "pathOnClient", "relatedSFDCRecordId", "title" ],
+      "properties" : {
+        "relatedSFDCRecordId" : {
+          "type" : "string",
+          "description" : "The record id the file should be attached to in Salesforce."
+        },
+        "pathOnClient" : {
+          "type" : "string",
+          "description" : "The complete path of the document, this field is used to determine the FileType. Specify a complete path including the path extension."
+        },
+        "title" : {
+          "type" : "string",
+          "description" : "The title of a document."
+        },
+        "base64Content" : {
+          "type" : "string",
+          "description" : "The content or body of the document."
+        }
+      },
+      "example" : {
+        "relatedSFDCRecordId" : "5000i000000njJjAAI",
+        "pathOnClient" : "slalom.png",
+        "title" : "slalom",
+        "base64Content" : "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"
+      }
+    },
+    "WrapperContainer_UnitSearch" : {
+      "type" : "object",
+      "required" : [ "requestWrapper" ],
+      "properties" : {
+        "requestWrapper" : {
+          "$ref" : "#/definitions/RequestWrapper_UnitSearch"
+        }
+      }
+    },
+    "RequestWrapper_UnitSearch" : {
+      "type" : "object",
+      "required" : [ "unitSearch" ],
+      "properties" : {
+        "unitSearch" : {
+          "$ref" : "#/definitions/UnitSearch_RESI"
+        }
+      }
+    },
+    "UnitSearch_RESI" : {
+      "type" : "object",
+      "required" : [ "propertyCode", "unitNumber" ],
+      "properties" : {
+        "firstName" : {
+          "type" : "string"
+        },
+        "lastName" : {
+          "type" : "string"
+        },
+        "unitNumber" : {
+          "type" : "string"
+        },
+        "propertyCode" : {
+          "type" : "string"
+        },
+        "accountName" : {
+          "type" : "string"
+        }
+      },
+      "example" : {
+        "firstName" : "The",
+        "lastName" : "Beast",
+        "unitNumber" : "197",
+        "propertyCode" : "SPP"
+      }
+    },
+    "HOME_OWNER_ASSOCIATION_GET" : {
+      "type" : "object",
+      "properties" : {
+        "Role__c" : {
+          "type" : "string",
+          "description" : "This is the home owner association members role in the HOA"
+        },
+        "Account_Name__c" : {
+          "type" : "string",
+          "description" : "This is the name of the home owner association member"
+        },
+        "Id" : {
+          "type" : "string",
+          "description" : "Id of the home owner association member record"
+        }
+      },
+      "example" : {
+        "Home_Owner_Association_Members" : {
+          "Role__c" : "Role Name",
+          "Account_Name__c" : "Mr. Test",
+          "Id" : "a2K0i00000002bhEAA"
+        }
+      }
+    },
+    "Request_RESI_POST" : {
+      "type" : "object",
+      "required" : [ "Case_Origin__c", "Id", "Property_Owned__c", "Property_lkp__c", "RecordTypeId", "unit__c" ],
+      "properties" : {
+        "Id" : {
+          "type" : "string"
+        },
+        "Case_Origin__c" : {
+          "type" : "string"
+        },
+        "Property_lkp__c" : {
+          "type" : "string"
+        },
+        "Property_Owned__c" : {
+          "type" : "string"
+        },
+        "unit__c" : {
+          "type" : "string"
+        },
+        "RecordTypeId" : {
+          "type" : "string"
+        },
+        "more... (omitted)" : {
+          "type" : "string"
+        }
+      },
+      "example" : {
+        "Id" : "5000i000000cyI0AAI",
+        "AccountId" : "0010i000002jLIeAAM",
+        "Category__c" : "Parcel",
+        "Description" : "New Instruction",
+        "Vendor__c" : "a1f0i0000000ANWAA2",
+        "request_date__c" : "2019-03-04",
+        "time__c" : "15:10:00.000Z",
+        "End_Time__c" : "17:10:00.000Z",
+        "status" : "Open",
+        "Case_Origin__c" : "AM",
+        "Property_lkp__c" : "a010i000000U9YEAA0",
+        "Property_Owned__c" : "a1C0i0000000VEcEAM",
+        "unit__c" : "a030i000000orVSAAY",
+        "RecordTypeId" : "0120i0000005jABAAY",
+        "Created_By_Digital_Platform_User__c" : "Test User"
+      }
+    },
+    "Request_CommonArea" : {
+      "type" : "object",
+      "required" : [ "Case_Origin__c", "Id", "Property_Owned__c", "Property_lkp__c", "RecordTypeId", "unit__c" ],
+      "properties" : {
+        "Id" : {
+          "type" : "string"
+        },
+        "Case_Origin__c" : {
+          "type" : "string"
+        },
+        "Property_lkp__c" : {
+          "type" : "string"
+        },
+        "Property_Owned__c" : {
+          "type" : "string"
+        },
+        "unit__c" : {
+          "type" : "string"
+        },
+        "RecordTypeId" : {
+          "type" : "string"
+        },
+        "more... (omitted)" : {
+          "type" : "string"
+        }
+      },
+      "example" : {
+        "commonAreaBooking" : {
+          "Property_Owned__c" : "a1C0i0000000QfPEAU",
+          "Common_Area__c" : "a2E0i0000001hetEAA",
+          "Status" : "Approved",
+          "time__c" : "13:50:00.000Z",
+          "End_Time__c" : "13:55:00.000Z",
+          "Request_date__c" : "2019-10-19",
+          "End_Date__c" : "2019-10-19"
+        }
+      }
+    },
+    "Request_RESI_Update" : {
+      "type" : "object",
+      "required" : [ "Case_Origin__c", "Id", "Property_Owned__c", "Property_lkp__c", "RecordTypeId", "unit__c" ],
+      "properties" : {
+        "Id" : {
+          "type" : "string"
+        },
+        "Case_Origin__c" : {
+          "type" : "string"
+        },
+        "Property_lkp__c" : {
+          "type" : "string"
+        },
+        "Property_Owned__c" : {
+          "type" : "string"
+        },
+        "unit__c" : {
+          "type" : "string"
+        },
+        "RecordTypeId" : {
+          "type" : "string"
+        },
+        "more... (omitted)" : {
+          "type" : "string"
+        }
+      },
+      "example" : {
+        "Id" : "5000i000000cyI0AAI",
+        "AccountId" : "0010i000002jLIeAAM",
+        "Category__c" : "Parcel",
+        "Description" : "New Instruction",
+        "Vendor__c" : "a1f0i0000000ANWAA2",
+        "request_date__c" : "2019-03-04",
+        "time__c" : "15:10:00.000Z",
+        "End_Time__c" : "17:10:00.000Z",
+        "status" : "Open",
+        "Case_Origin__c" : "AM",
+        "Property_lkp__c" : "a010i000000U9YEAA0",
+        "Property_Owned__c" : "a1C0i0000000VEcEAM",
+        "unit__c" : "a030i000000orVSAAY",
+        "RecordTypeId" : "0120i0000005jABAAY",
+        "Digital_Platform_User_Last_Modified_Date__c" : "2019-03-04",
+        "Last_Modified_By_Digital_Platform_User__c" : "Test User 2"
+      }
+    },
+    "Request_RESI" : {
+      "type" : "object",
+      "required" : [ "Case_Origin__c", "Id", "Property_Owned__c", "Property_lkp__c", "RecordTypeId", "unit__c" ],
+      "properties" : {
+        "Id" : {
+          "type" : "string"
+        },
+        "Case_Origin__c" : {
+          "type" : "string"
+        },
+        "Property_lkp__c" : {
+          "type" : "string"
+        },
+        "Property_Owned__c" : {
+          "type" : "string"
+        },
+        "unit__c" : {
+          "type" : "string"
+        },
+        "RecordTypeId" : {
+          "type" : "string"
+        },
+        "more... (omitted)" : {
+          "type" : "string"
+        }
+      },
+      "example" : {
+        "Id" : "5000i000000cyI0AAI",
+        "AccountId" : "0010i000002jLIeAAM",
+        "Category__c" : "Parcel",
+        "Description" : "New Instruction",
+        "Vendor__c" : "a1f0i0000000ANWAA2",
+        "request_date__c" : "2019-03-04",
+        "time__c" : "15:10:00.000Z",
+        "End_Time__c" : "17:10:00.000Z",
+        "status" : "Open",
+        "Case_Origin__c" : "AM",
+        "Property_lkp__c" : "a010i000000U9YEAA0",
+        "Property_Owned__c" : "a1C0i0000000VEcEAM",
+        "unit__c" : "a030i000000orVSAAY",
+        "RecordTypeId" : "0120i0000005jABAAY"
+      }
+    },
+    "Unit" : {
+      "type" : "object",
+      "properties" : {
+        "Id" : {
+          "type" : "string"
+        },
+        "Name" : {
+          "type" : "string"
+        },
+        "Unit_Number__c" : {
+          "type" : "string"
+        },
+        "Property__c.Name" : {
+          "type" : "string"
+        },
+        "more... (omitted)" : {
+          "type" : "string"
+        }
+      },
+      "example" : {
+        "Id" : "5000i000000cfd8AAA",
+        "Name" : "AM-1002",
+        "Unit_Number__c" : "1002",
+        "Property__c.Name" : "Four Seasons Hotel Casa Medina Bogota"
+      }
+    },
+    "PropertyOwned" : {
+      "type" : "object",
+      "properties" : {
+        "Id" : {
+          "type" : "string",
+          "description" : "This is the property owned Salesforce record ID."
+        },
+        "Unit__c" : {
+          "type" : "string",
+          "description" : "This is the unit Salesforce record ID"
+        },
+        "Contact__c" : {
+          "type" : "string",
+          "description" : "This is the account (resident) Salesforce record ID"
+        },
+        "Property__c" : {
+          "type" : "string",
+          "description" : "This is the property Salesforce record ID"
+        }
+      },
+      "example" : {
+        "Id" : "a1C1f000001TsvlEAC",
+        "Unit__c" : "a031f000000qLMgAAM",
+        "Contact__c" : "0011f000006Vuj6AAC",
+        "Property__C" : "a011f000000iVGIAA2"
+      }
+    },
+    "fileUploadSuccess" : {
+      "type" : "object",
+      "properties" : {
+        "url" : {
+          "type" : "string"
+        },
+        "size" : {
+          "type" : "string"
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "extension" : {
+          "type" : "string"
+        },
+        "contentDistributionId" : {
+          "type" : "string"
+        }
+      },
+      "example" : {
+        "url" : "/services/apexrest/v1/resi/file/05D0i00000003mXEAQ",
+        "size" : "6060",
+        "name" : "slalom",
+        "extension" : "png",
+        "contentDistributionId" : "05D0i00000003mXEAQ"
+      }
+    },
+    "notificationSuccess" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        }
+      },
+      "example" : {
+        "id" : "a2l1f00000029U8AAI"
+      }
+    },
+    "PicklistValue" : {
+      "type" : "object",
+      "properties" : {
+        "label" : {
+          "type" : "string",
+          "description" : "The displayable value of the picklist to use in UI."
+        },
+        "value" : {
+          "type" : "string",
+          "description" : "The value of the picklist to use in the API."
+        },
+        "validFor" : {
+          "type" : "array",
+          "description" : "If the picklist is a dependent picklist, the property contains a list of the controlling value indexes for which this value is valid. If the picklist is an independent picklist, the list is empty.",
+          "items" : {
+            "type" : "integer"
+          }
+        },
+        "attributes" : {
+          "type" : "object",
+          "description" : "This property might contain a nested response body to help consumers understand the meaning of the picklist value.",
+          "properties" : { }
+        }
+      },
+      "example" : {
+        "label" : "option 1",
+        "value" : "option 1",
+        "validFor" : [ 1, 2 ]
+      }
+    },
+    "PicklistValues" : {
+      "type" : "object",
+      "properties" : {
+        "controllerValues" : {
+          "type" : "object",
+          "description" : "If the picklist is dependent, this property is a map of its immediate controlling field's picklist values to their indexes. If the controlling field is a picklist, the String is the picklist value and the integer is the value's index. If the controlling field is a checkbox, the values in the map are 'false': 0 and 'true': 1. If the picklist is independent, the map is empty.",
+          "additionalProperties" : {
+            "$ref" : "#/definitions/PicklistValues_controllerValues"
+          }
+        },
+        "defaultValue" : {
+          "description" : "The default value for the picklist, or null if there isn't one.",
+          "$ref" : "#/definitions/PicklistValue"
+        },
+        "values" : {
+          "type" : "array",
+          "description" : "A list of values for this object, record type, field combination.",
+          "items" : {
+            "$ref" : "#/definitions/PicklistValue"
+          }
+        }
+      },
+      "example" : {
+        "controllerValues" : { },
+        "defaultValue" : {
+          "label" : "option 1",
+          "value" : "option 1"
+        },
+        "values" : [ {
+          "value" : "3rd party appointment",
+          "validFor" : [ ],
+          "label" : "3rd party appointment"
+        }, {
+          "value" : "A la carte dining delivery",
+          "validFor" : [ ],
+          "label" : "A la carte dining delivery"
+        }, {
+          "value" : "Car Wash",
+          "validFor" : [ ],
+          "label" : "Car Wash"
+        }, {
+          "value" : "Catering",
+          "validFor" : [ ],
+          "label" : "Catering"
+        }, {
+          "value" : "Due In",
+          "validFor" : [ ],
+          "label" : "Due In"
+        }, {
+          "value" : "Due Out",
+          "validFor" : [ ],
+          "label" : "Due Out"
+        }, {
+          "value" : "FB Storage",
+          "validFor" : [ ],
+          "label" : "F&amp;B Storage"
+        } ]
+      }
+    },
+    "PicklistValuesCollection" : {
+      "type" : "object",
+      "properties" : {
+        "picklistFieldValues" : {
+          "description" : "A map of field names to Picklist Values response bodies. This map contains all the picklist values for all the picklists of a specified record type, including dependent picklists. If a field isn't a picklist, it isn't represented in the map.",
+          "$ref" : "#/definitions/PicklistValues"
+        }
+      },
+      "example" : {
+        "picklistFieldValues" : {
+          "Status" : {
+            "values" : [ {
+              "value" : "Open",
+              "validFor" : [ ],
+              "label" : "Open"
+            }, {
+              "value" : "Closed",
+              "validFor" : [ ],
+              "label" : "Closed"
+            }, {
+              "value" : "Pending",
+              "validFor" : [ ],
+              "label" : "Pending"
+            } ],
+            "defaultValue" : {
+              "value" : "Open",
+              "validFor" : [ ],
+              "label" : "Open"
+            },
+            "controllerValues" : { }
+          },
+          "Sample__c" : {
+            "values" : [ {
+              "value" : "Option 1",
+              "validFor" : [ 0, 1, 2 ],
+              "label" : "Option 1"
+            }, {
+              "value" : "Option 2",
+              "validFor" : [ 0 ],
+              "label" : "Option 2"
+            }, {
+              "value" : "Option 3",
+              "validFor" : [ 1, 2 ],
+              "label" : "Option 3"
+            } ],
+            "controllerValues" : {
+              "Catering" : 3,
+              "Car Wash" : 2,
+              "A la carte dining delivery" : 1,
+              "3rd party appointment" : 0
+            }
+          },
+          "Category__c" : {
+            "values" : [ {
+              "value" : "3rd party appointment",
+              "validFor" : [ ],
+              "label" : "3rd party appointment"
+            }, {
+              "value" : "A la carte dining delivery",
+              "validFor" : [ ],
+              "label" : "A la carte dining delivery"
+            }, {
+              "value" : "Car Wash",
+              "validFor" : [ ],
+              "label" : "Car Wash"
+            }, {
+              "value" : "Catering",
+              "validFor" : [ ],
+              "label" : "Catering"
+            } ],
+            "controllerValues" : { }
+          }
+        }
+      }
+    },
+    "propertyResidents" : {
+      "type" : "object",
+      "properties" : {
+        "firstName" : {
+          "type" : "string",
+          "description" : "This is the residents first name"
+        },
+        "lastName" : {
+          "type" : "string",
+          "description" : "This is the residents last name"
+        },
+        "unitNumber" : {
+          "type" : "string",
+          "description" : "This is the residents unit number"
+        },
+        "name" : {
+          "type" : "string",
+          "description" : "This is the resident's full name or the name of a company account record"
+        }
+      },
+      "example" : {
+        "firstName" : "jack",
+        "lastName" : "lastName",
+        "unitNumber" : "123",
+        "name" : "jack middlename lastName"
+      }
+    },
+    "CreateResponse" : {
+      "type" : "object",
+      "properties" : {
+        "Id" : {
+          "type" : "string"
+        },
+        "CaseNumber" : {
+          "type" : "string"
+        }
+      }
+    },
+    "ExceptionResponse" : {
+      "type" : "object",
+      "properties" : {
+        "fields" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "message" : {
+          "type" : "string"
+        },
+        "errorCode" : {
+          "type" : "string"
+        }
+      }
+    },
+    "commonAreaBookings" : {
+      "type" : "object",
+      "properties" : {
+        "Common_Area_Bookings" : {
+          "type" : "object",
+          "description" : "stores the common area bookings",
+          "properties" : { }
+        }
+      },
+      "example" : {
+        "Common_Area_Bookings" : [ {
+          "attributes" : {
+            "type" : "Case",
+            "url" : "/services/data/v46.0/sobjects/Case/5000i000000nq86AAA"
+          },
+          "Property_Owned__c" : "a1C0i0000000bO5EAI",
+          "Request_Date__c" : "2019-10-01",
+          "Time__c" : "21:00:00.000Z",
+          "End_Time__c" : "21:30:00.000Z",
+          "Status" : "Approved",
+          "Id" : "5000i000000nq86AAA"
+        } ]
+      }
+    },
+    "commonAreaRecordNotFound" : {
+      "type" : "string",
+      "example" : [ {
+        "fields" : [ "string" ],
+        "message" : "No Common Area was found for the Id provided",
+        "errorCode" : "string"
+      } ]
+    },
+    "fileNotFound" : {
+      "type" : "string",
+      "example" : [ {
+        "message" : "File does not exist or the distribution key has expired",
+        "errorCode" : "NOT_FOUND"
+      } ]
+    },
+    "PropertyOwnedNoRecordFound" : {
+      "type" : "string",
+      "example" : [ {
+        "fields" : [ "string" ],
+        "message" : "No Property owned exists for the id passed",
+        "errorCode" : "string"
+      } ]
+    },
+    "PropertyRecordNotFound" : {
+      "type" : "string",
+      "example" : [ {
+        "fields" : [ "string" ],
+        "message" : "No matching Property record found.",
+        "errorCode" : "string"
+      } ]
+    },
+    "documentLibraryInfo" : {
+      "type" : "object",
+      "properties" : {
+        "Resident_Documents" : {
+          "type" : "object",
+          "description" : "list of resident assigned documents",
+          "properties" : { }
+        },
+        "Unit_Documents" : {
+          "type" : "object",
+          "description" : "list of unit assigned documents",
+          "properties" : { }
+        }
+      },
+      "example" : {
+        "Resident_Documents" : [ {
+          "fileDetails" : {
+            "url" : "/services/apexrest/v1/resi/file/05D1f0000000SU7EAM",
+            "size" : 203387,
+            "name" : "Test",
+            "extension" : "pdf",
+            "contentDistributionId" : "05D1f0000000SU7EAM"
+          },
+          "documentType" : "Resident_Digital_Document",
+          "documentTitle" : "Test",
+          "category" : "Association Dues"
+        }, {
+          "fileDetails" : {
+            "url" : "/services/apexrest/v1/resi/file/05D1f0000000SUlEAM",
+            "size" : 203387,
+            "name" : "TESTER",
+            "extension" : "pdf",
+            "contentDistributionId" : "05D1f0000000SUlEAM"
+          },
+          "documentType" : "Resident_Digital_Document",
+          "documentTitle" : "TESTER",
+          "category" : "Monthly Billing"
+        } ],
+        "Unit_Documents" : [ {
+          "fileDetails" : {
+            "url" : "/services/apexrest/v1/resi/file/05D1f0000000SUMEA2",
+            "size" : 203387,
+            "name" : "Test",
+            "extension" : "pdf",
+            "contentDistributionId" : "05D1f0000000SUMEA2"
+          },
+          "documentType" : "Unit_Documentation",
+          "documentTitle" : "Test",
+          "category" : "Contracts"
+        }, {
+          "fileDetails" : {
+            "url" : "/services/apexrest/v1/resi/file/05D1f0000000SUHEA2",
+            "size" : 31455,
+            "name" : "unit",
+            "extension" : "pdf",
+            "contentDistributionId" : "05D1f0000000SUHEA2"
+          },
+          "documentType" : "Unit_Documentation",
+          "documentTitle" : "unit",
+          "category" : "Contracts"
+        }, {
+          "fileDetails" : {
+            "url" : "/services/apexrest/v1/resi/file/05D1f0000000SUCEA2",
+            "size" : 32497,
+            "name" : "TEST",
+            "extension" : "jpg",
+            "contentDistributionId" : "05D1f0000000SUCEA2"
+          },
+          "documentType" : "Unit_Documentation",
+          "documentTitle" : "TEST",
+          "category" : "Floor Plan"
+        } ]
+      }
+    },
+    "commonAreasInfo" : {
+      "type" : "object",
+      "properties" : {
+        "Common_Areas" : {
+          "type" : "object",
+          "description" : "Stores a list of common area records",
+          "properties" : { }
+        }
+      },
+      "example" : {
+        "Common_Areas" : [ {
+          "attachments" : [ {
+            "url" : "/services/apexrest/v1/resi/file/05D0i00000003mhEAA",
+            "size" : 147396,
+            "name" : "Admin Master Guide (1) (2)",
+            "extension" : "pdf",
+            "contentDistributionId" : "05D0i00000003mhEAA"
+          } ],
+          "Common_Area" : {
+            "attributes" : {
+              "type" : "Common_Area__c",
+              "url" : "/services/data/v46.0/sobjects/Common_Area__c/a2E0i0000000dvuEAA"
+            },
+            "Name" : "shared test from south",
+            "Maximum_Duration__c" : 200,
+            "Bookable_by_Residents__c" : false,
+            "Description__c" : "test",
+            "Id" : "a2E0i0000000dvuEAA",
+            "Common_Business_Hours__r" : {
+              "totalSize" : 2,
+              "done" : true,
+              "records" : [ {
+                "attributes" : {
+                  "type" : "Common_Business_Hours__c",
+                  "url" : "/services/data/v46.0/sobjects/Common_Business_Hours__c/a2I0i0000000a3zEAA"
+                },
+                "Common_Area__c" : "a2E0i0000000dvuEAA",
+                "Id" : "a2I0i0000000a3zEAA",
+                "Closing_Hour__c" : "18:15:00.000Z",
+                "Day_of_Week__c" : "Monday;Tuesday;Wednesday;Thursday;Friday",
+                "Opening_Hour__c" : "07:30:00.000Z"
+              }, {
+                "attributes" : {
+                  "type" : "Common_Business_Hours__c",
+                  "url" : "/services/data/v46.0/sobjects/Common_Business_Hours__c/a2I0i0000000a44EAA"
+                },
+                "Common_Area__c" : "a2E0i0000000dvuEAA",
+                "Id" : "a2I0i0000000a44EAA",
+                "Closing_Hour__c" : "21:00:00.000Z",
+                "Day_of_Week__c" : "Saturday;Sunday",
+                "Opening_Hour__c" : "07:45:00.000Z"
+              } ]
+            }
+          }
+        }, {
+          "attachments" : [ ],
+          "Common_Area" : {
+            "attributes" : {
+              "type" : "Common_Area__c",
+              "url" : "/services/data/v46.0/sobjects/Common_Area__c/a2E0i0000001hetEAA"
+            },
+            "Name" : "Shared on south",
+            "Maximum_Duration__c" : 414,
+            "Bookable_by_Residents__c" : true,
+            "Id" : "a2E0i0000001hetEAA",
+            "Common_Business_Hours__r" : {
+              "totalSize" : 1,
+              "done" : true,
+              "records" : [ {
+                "attributes" : {
+                  "type" : "Common_Business_Hours__c",
+                  "url" : "/services/data/v46.0/sobjects/Common_Business_Hours__c/a2I0i0000000a3uEAA"
+                },
+                "Common_Area__c" : "a2E0i0000001hetEAA",
+                "Id" : "a2I0i0000000a3uEAA",
+                "Closing_Hour__c" : "06:00:00.000Z",
+                "Day_of_Week__c" : "Monday;Tuesday;Wednesday;Thursday;Friday;Saturday;Sunday",
+                "Opening_Hour__c" : "00:15:00.000Z"
+              } ]
+            }
+          }
+        }, {
+          "attachments" : [ ],
+          "Common_Area" : {
+            "attributes" : {
+              "type" : "Common_Area__c",
+              "url" : "/services/data/v46.0/sobjects/Common_Area__c/a2E0i0000000dvfEAA"
+            },
+            "Name" : "not shared north2",
+            "Maximum_Duration__c" : 3,
+            "Bookable_by_Residents__c" : true,
+            "Id" : "a2E0i0000000dvfEAA"
+          }
+        } ]
+      }
+    },
+    "propertyOwnedInfo" : {
+      "type" : "object",
+      "properties" : {
+        "Requests" : {
+          "type" : "object",
+          "description" : "Stores the requests",
+          "properties" : { }
+        },
+        "Resident" : {
+          "type" : "object",
+          "description" : "Stores the file details associated with the case record",
+          "properties" : { }
+        }
+      },
+      "example" : {
+        "Common_Area_Bookings" : [ {
+          "attachments" : [ {
+            "url" : "/services/apexrest/v1/resi/file/05D0i00000003n2EAA",
+            "size" : 147396,
+            "name" : "Admin Master Guide (1)",
+            "extension" : "pdf",
+            "contentDistributionId" : "05D0i00000003n2EAA"
+          } ],
+          "Common_Area_Booking" : {
+            "attributes" : {
+              "type" : "Case",
+              "url" : "/services/data/v46.0/sobjects/Case/5000i000000nseJAAQ"
+            },
+            "Common_Area_Name__c" : "Lift 1",
+            "Property_Owned__c" : "a1C1f000001ck4MEAQ",
+            "Request_Date__c" : "2019-10-08",
+            "Time__c" : "21:30:00.000Z",
+            "End_Time__c" : "22:00:00.000Z",
+            "Status" : "Approved",
+            "End_Date__c" : "2019-10-08",
+            "Description" : "Common area Request",
+            "RecordTypeId" : "0120i0000006N2MAAU",
+            "Id" : "5000i000000nseJAAQ"
+          }
+        } ],
+        "Resident" : {
+          "profilePhoto" : {
+            "url" : "/services/apexrest/v1/resi/file/05D1f0000000SGeEAM",
+            "size" : 44986,
+            "name" : "Tony Stark",
+            "extension" : "jpg",
+            "ContentDistributionId" : "05D1f0000000SGeEAM"
+          },
+          "Property_Owned__c" : {
+            "attributes" : {
+              "type" : "Property_Owned__c",
+              "url" : "/services/data/v47.0/sobjects/Property_Owned__c/a1C1f000001ck4MEAQ"
+            },
+            "Customer_Type__c" : "Resident-Employee",
+            "Contact__c" : "0011f00000747T9AAI",
+            "Id" : "a1C1f000001ck4MEAQ",
+            "Home_Owner_Association__c" : "a2J0i000000019FEAQ",
+            "Home_Owner_Association_Name__c" : "Home Owner Association Name",
+            "Contact__r" : {
+              "attributes" : {
+                "type" : "Account",
+                "url" : "/services/data/v47.0/sobjects/Account/0011f00000747T9AAI"
+              },
+              "Id" : "0011f00000747T9AAI",
+              "Full_Name__c" : "His Excellency Tony Iron Man Stark",
+              "FirstName" : "Tony",
+              "MiddleName" : "Iron Man",
+              "LastName" : "Stark",
+              "Name" : "Tony Iron Man Stark",
+              "Profile_Photo_Content_DocI_d__c" : "0691f0000006t9jAAA"
+            }
+          }
+        },
+        "Vehicles_Owned" : [ {
+          "profilePhoto" : {
+            "url" : "/services/apexrest/v1/resi/file/05D0i000000040bEAA",
+            "size" : 87467,
+            "name" : "image-2019-05-23-10-51-23-653",
+            "extension" : "png",
+            "contentDistributionId" : "05D0i000000040bEAA"
+          },
+          "Vehicle_Drivers" : [ {
+            "Driver_Name" : "Super HVAC HVAC Person"
+          }, {
+            "Driver_Name" : "Ricardo From Golden"
+          }, {
+            "Driver_Photo" : {
+              "url" : "/services/apexrest/v1/resi/file/05D0i000000040aEAA",
+              "size" : 55394,
+              "name" : "donald-face2",
+              "extension" : "png",
+              "contentDistributionId" : "05D0i000000040aEAA"
+            },
+            "Driver_Name" : "John Smith"
+          }, {
+            "Driver_Photo" : {
+              "url" : "05D0i000000040ZEAQ",
+              "size" : 10046,
+              "name" : "HOMER",
+              "extension" : "jpg",
+              "contentDistributionId" : "05D0i000000040ZEAQ"
+            },
+            "Driver_Name" : "Super HVAC HVAC Person"
+          } ],
+          "Vehicle__c" : {
+            "attributes" : {
+              "type" : "Vehicle__c",
+              "url" : "/services/data/v47.0/sobjects/Vehicle__c/a2B0i0000000iDPEAY"
+            },
+            "Id" : "a2B0i0000000iDPEAY",
+            "Make__c" : "new",
+            "Vehicle_Type__c" : "Boat",
+            "Model__c" : "youv",
+            "Assigned_Drivers__c" : "a1C0i0000000VKzEAM,a1C0i0000000pc3EAA,a1C0i0000000pcDEAQ,a1C0i0000000V9ZEAU",
+            "Profile_Photo_Content_Doc_Id__c" : "0690i00000034BZAAY",
+            "Resident_Connections__r" : {
+              "totalSize" : 4,
+              "done" : true,
+              "records" : [ {
+                "attributes" : {
+                  "type" : "Resident_Connection__c",
+                  "url" : "/services/data/v47.0/sobjects/Resident_Connection__c/a2c0i0000000ld2AAA"
+                },
+                "Vehicle__c" : "a2B0i0000000iDPEAY",
+                "Id" : "a2c0i0000000ld2AAA",
+                "Property_Owned__c" : "a1C0i0000000V9ZEAU",
+                "Property_Owned__r" : {
+                  "attributes" : {
+                    "type" : "Property_Owned__c",
+                    "url" : "/services/data/v47.0/sobjects/Property_Owned__c/a1C0i0000000V9ZEAU"
+                  },
+                  "Id" : "a1C0i0000000V9ZEAU",
+                  "Contact__c" : "0010i000002kixCAAQ",
+                  "Contact__r" : {
+                    "attributes" : {
+                      "type" : "Account",
+                      "url" : "/services/data/v47.0/sobjects/Account/0010i000002kixCAAQ"
+                    },
+                    "Id" : "0010i000002kixCAAQ",
+                    "Name" : "Super HVAC HVAC Person",
+                    "Profile_Photo_Content_DocI_d__c" : "0690i0000002g5XAAQ"
+                  }
+                }
+              }, {
+                "attributes" : {
+                  "type" : "Resident_Connection__c",
+                  "url" : "/services/data/v47.0/sobjects/Resident_Connection__c/a2c0i0000000lcsAAA"
+                },
+                "Vehicle__c" : "a2B0i0000000iDPEAY",
+                "Id" : "a2c0i0000000lcsAAA",
+                "Property_Owned__c" : "a1C0i0000000pc3EAA",
+                "Property_Owned__r" : {
+                  "attributes" : {
+                    "type" : "Property_Owned__c",
+                    "url" : "/services/data/v47.0/sobjects/Property_Owned__c/a1C0i0000000pc3EAA"
+                  },
+                  "Id" : "a1C0i0000000pc3EAA",
+                  "Contact__c" : "0010i000002hHtcAAE",
+                  "Contact__r" : {
+                    "attributes" : {
+                      "type" : "Account",
+                      "url" : "/services/data/v47.0/sobjects/Account/0010i000002hHtcAAE"
+                    },
+                    "Id" : "0010i000002hHtcAAE",
+                    "Name" : "Ricardo From Golden"
+                  }
+                }
+              }, {
+                "attributes" : {
+                  "type" : "Resident_Connection__c",
+                  "url" : "/services/data/v47.0/sobjects/Resident_Connection__c/a2c0i0000000lcZAAQ"
+                },
+                "Vehicle__c" : "a2B0i0000000iDPEAY",
+                "Id" : "a2c0i0000000lcZAAQ",
+                "Property_Owned__c" : "a1C0i0000000VKzEAM",
+                "Property_Owned__r" : {
+                  "attributes" : {
+                    "type" : "Property_Owned__c",
+                    "url" : "/services/data/v47.0/sobjects/Property_Owned__c/a1C0i0000000VKzEAM"
+                  },
+                  "Id" : "a1C0i0000000VKzEAM",
+                  "Contact__c" : "0010i000003WW6TAAW",
+                  "Contact__r" : {
+                    "attributes" : {
+                      "type" : "Account",
+                      "url" : "/services/data/v47.0/sobjects/Account/0010i000003WW6TAAW"
+                    },
+                    "Id" : "0010i000003WW6TAAW",
+                    "Name" : "John Smith",
+                    "Profile_Photo_Content_DocI_d__c" : "0690i0000002a1AAAQ"
+                  }
+                }
+              }, {
+                "attributes" : {
+                  "type" : "Resident_Connection__c",
+                  "url" : "/services/data/v47.0/sobjects/Resident_Connection__c/a2c0i0000000lcxAAA"
+                },
+                "Vehicle__c" : "a2B0i0000000iDPEAY",
+                "Id" : "a2c0i0000000lcxAAA",
+                "Property_Owned__c" : "a1C0i0000000pcDEAQ",
+                "Property_Owned__r" : {
+                  "attributes" : {
+                    "type" : "Property_Owned__c",
+                    "url" : "/services/data/v47.0/sobjects/Property_Owned__c/a1C0i0000000pcDEAQ"
+                  },
+                  "Id" : "a1C0i0000000pcDEAQ",
+                  "Contact__c" : "0010i000002kixCAAQ",
+                  "Contact__r" : {
+                    "attributes" : {
+                      "type" : "Account",
+                      "url" : "/services/data/v47.0/sobjects/Account/0010i000002kixCAAQ"
+                    },
+                    "Id" : "0010i000002kixCAAQ",
+                    "Name" : "Super HVAC HVAC Person",
+                    "Profile_Photo_Content_DocI_d__c" : "0690i0000002g5XAAQ"
+                  }
+                }
+              } ]
+            }
+          }
+        } ],
+        "Requests" : [ {
+          "Case" : {
+            "attributes" : {
+              "type" : "Case",
+              "url" : "/services/data/v46.0/sobjects/Case/5000i000000njYoAAI"
+            },
+            "Id" : "5000i000000njYoAAI",
+            "Account_Name__c" : "His Royal Highness Squidward Tentacles",
+            "Recurrence_End_Date__c" : "2019-11-01",
+            "Recurrence_End_Time__c" : "03:00:00.000Z",
+            "Recurrence_Interval__c" : "1",
+            "Recurrence_Start_Date__c" : "2019-10-01",
+            "Recurrence_Start_Time__c" : "00:15:00.000Z",
+            "Recurrence_Type__c" : "Weekly",
+            "Request_Date__c" : "2019-09-19",
+            "End_Time__c" : "00:15:00.000Z",
+            "Time__c" : "00:15:00.000Z",
+            "Category__c" : "Accounting/Authorized on account",
+            "Description" : "Squid",
+            "RecordTypeId" : "0120i0000005CwCAAU",
+            "RecordType" : {
+              "attributes" : {
+                "type" : "RecordType",
+                "url" : "/services/data/v46.0/sobjects/RecordType/0120i0000005CwCAAU"
+              },
+              "Id" : "0120i0000005CwCAAU",
+              "DeveloperName" : "Home_Requests"
+            }
+          },
+          "attachments" : [ {
+            "size" : 207050,
+            "name" : "AppBuilder_Samples",
+            "extension" : "pdf",
+            "ContentDistributionId" : "05D0i00000003U8EAI"
+          } ]
+        } ],
+        "Notification_Preference" : {
+          "attributes" : {
+            "type" : "Notification__c",
+            "url" : "/services/data/v47.0/sobjects/Notification__c/a2L0i00000006j3EAA"
+          },
+          "Property_Owned__c" : "a1C1f000001ck4MEAQ",
+          "Notify_By__c" : "Email",
+          "Common_Area_Bookings__c" : true,
+          "Grocery_items__c" : false,
+          "Laundry_Dry_Cleaning__c" : false,
+          "Pick_up__c" : false,
+          "Vehicle_Services__c" : false,
+          "Unit_Access__c" : false,
+          "Florists_Plants__c" : false,
+          "Keys__c" : false,
+          "Packages_and_Deliveries__c" : false,
+          "Resident_Pick_ups__c" : false,
+          "Resident_Purchase_and_Errands__c" : false,
+          "Id" : "a2L0i00000006j3EAA"
+        },
+        "Pets" : [ {
+          "profilePhoto" : {
+            "url" : "/services/apexrest/v1/resi/file/05D0i00000003t9EAA",
+            "size" : 1781996,
+            "name" : "homer",
+            "extension" : "png",
+            "contentDistributionId" : "05D0i00000003t9EAA"
+          },
+          "attachments" : [ {
+            "url" : "/services/apexrest/v1/resi/file/05D0i00000003s1EAA",
+            "size" : 480079,
+            "name" : "Destination Success",
+            "extension" : "png",
+            "contentDistributionId" : "05D0i00000003s1EAA"
+          } ],
+          "Pet__c" : {
+            "attributes" : {
+              "type" : "Pet__c",
+              "url" : "/services/data/v47.0/sobjects/Pet__c/a2D0i0000000XtxEAE"
+            },
+            "Name" : "Test",
+            "Active__c" : true,
+            "Category__c" : "Dog",
+            "Insurance_Start_Date__c" : "2019-09-21",
+            "Insurance_Expiry_Date__c" : "2019-09-30",
+            "Notes__c" : "This is a test note",
+            "Profile_Photo_Content_Doc_Id__c" : "0690i00000033qWAAQ",
+            "Id" : "a2D0i0000000XtxEAE"
+          }
+        }, {
+          "profilePhoto" : {
+            "url" : "/services/apexrest/v1/resi/file/05D0i00000003tAEAQ",
+            "size" : 22028,
+            "name" : "addressHistory",
+            "extension" : "png",
+            "contentDistributionId" : "05D0i00000003tAEAQ"
+          },
+          "attachments" : [ ],
+          "Pet__c" : {
+            "attributes" : {
+              "type" : "Pet__c",
+              "url" : "/services/data/v47.0/sobjects/Pet__c/a2D0i0000000YOCEA2"
+            },
+            "Name" : "Max",
+            "Active__c" : true,
+            "Category__c" : "Fish",
+            "Profile_Photo_Content_Doc_Id__c" : "0690i00000033tGAAQ",
+            "Id" : "a2D0i0000000YOCEA2"
+          }
+        } ]
+      }
+    },
+    "PicklistValues_controllerValues" : {
+      "type" : "object",
+      "properties" : {
+        "key" : {
+          "type" : "string"
+        },
+        "value" : {
+          "type" : "integer"
+        }
+      }
+    }
+  }
+}
